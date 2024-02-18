@@ -22,12 +22,33 @@ int main() {
     BIGNUM *m = BN_new();
     BN_hex2bn(&m, hex_message);
 
-    // sign the message
+    // modified the message
+    char *modified_message = "I owe you $200"; //changed to $200
+    char modified_hex_message[1000] = {0};
+
+    //loop through hex char array and convert to a ASCII 
+    for (int i = 0; i < strlen(modified_message); i++) {
+        sprintf(modified_hex_message + strlen(modified_hex_message), "%02X", modified_message[i]);
+    }
+
+    // get big num from hex
+    BIGNUM *modified_m = BN_new();
+    BN_hex2bn(&modified_m, modified_hex_message);
+
+    // sign the original message
     BIGNUM *signature = BN_new();
     BN_mod_exp(signature, m, d, n, BN_CTX_new());
 
-    printf("Signature: ");
+    // sign the modified message
+    BIGNUM *modified_signature = BN_new();
+    BN_mod_exp(modified_signature, modified_m, d, n, BN_CTX_new());
+
+    printf("Original Signature: ");
     BN_print_fp(stdout, signature);
+    printf("\n");
+
+    printf("Modified Signature: ");
+    BN_print_fp(stdout, modified_signature);
     printf("\n");
 
     //free the mem
